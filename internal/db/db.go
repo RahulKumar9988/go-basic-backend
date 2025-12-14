@@ -8,29 +8,25 @@ import (
 	"github.com/RahulKumar9988/go-basic-backend/internal/config"
 )
 
-var DB *sql.DB
-
-func Connext(cfg *config.Config) {
-	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s",
+func ConnectDB(cfg *config.Config) *sql.DB {
+	ConnectionString := fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		cfg.DBHost,
-		cfg.DBPass,
-		cfg.DBUser,
-		cfg.DBPort,
 		cfg.DBName,
+		cfg.DBPass,
+		cfg.DBPort,
+		cfg.DBUser,
 	)
 
-	var error error
+	db, err := sql.Open("mysql", ConnectionString)
 
-	DB, error = sql.Open("mySql", dsn)
-
-	if error != nil {
-		log.Fatal("error connecting db connection:", error)
+	if err != nil {
+		log.Fatal("failed to open db", err)
 	}
 
-	if error = DB.Ping(); error != nil {
-		log.Fatal("failed to connect to mySql:", error)
+	if err := db.Ping(); err != nil {
+		log.Fatal("Failed to connect to DB:", err)
 	}
-
-	log.Println("mySql connected sucessfully")
+	log.Panic("db connected")
+	return db
 }
