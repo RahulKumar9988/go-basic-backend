@@ -15,18 +15,18 @@ func NewTodoRepo(db *sql.DB) *TodoRepo {
 }
 
 // selection operations
-func (r TodoRepo) GetAll() ([]model.Todos, error) {
+func (r TodoRepo) GetAll() ([]model.Todo, error) {
 	rows, err := r.DB.Query("SELECT id,title,status FROM todos")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var Todos []model.Todos
+	var Todos []model.Todo
 
 	for rows.Next() {
-		var todo model.Todos
-		if err := rows.Scan(&todo.ID, &todo.Title, &todo.Status); err != nil {
+		var todo model.Todo
+		if err := rows.Scan(&todo.Id, &todo.Title, &todo.Status); err != nil {
 			return nil, err
 		}
 
@@ -42,7 +42,7 @@ func (r TodoRepo) GetAll() ([]model.Todos, error) {
 }
 
 // create operation
-func (r *TodoRepo) Create(todo model.Todos) error {
+func (r *TodoRepo) Create(todo model.Todo) error {
 	_, err := r.DB.Exec(
 		"ISNERT INTO todos (title, status) VALUES (?, ?)",
 		todo.Title,
@@ -52,7 +52,7 @@ func (r *TodoRepo) Create(todo model.Todos) error {
 }
 
 // update operation
-func (r *TodoRepo) Update(id string, todo model.Todos) error {
+func (r *TodoRepo) Update(id string, todo model.Todo) error {
 	_, err := r.DB.Exec(
 		"UPDATE todos SET title=?, status=? WHERE id=?",
 		todo.Title,
