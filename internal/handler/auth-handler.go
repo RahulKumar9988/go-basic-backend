@@ -31,6 +31,7 @@ func (h *AuthHander) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// simple token = userID (for learning)
 	json.NewEncoder(w).Encode(map[string]string{
 		"token": strconv.Itoa(userID),
 	})

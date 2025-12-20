@@ -3,14 +3,14 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"log"
+	"time"
 
 	"github.com/RahulKumar9988/go-basic-backend/internal/config"
 )
 
 var DB *sql.DB
 
-func DbConnection(cfg *config.Config) {
+func ConntectDB(cfg *config.Config) (*sql.DB, error) {
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s",
 		cfg.DBHost,
@@ -20,17 +20,19 @@ func DbConnection(cfg *config.Config) {
 		cfg.DBName,
 	)
 
-	var error error
+	db, err := sql.Open("mysql", dsn)
 
-	DB, error = sql.Open("mySql", dsn)
-
-	if error != nil {
-		log.Fatal("error connecting db connection:", error)
+	if err != nil {
+		return nil, err
 	}
 
-	if error = DB.Ping(); error != nil {
-		log.Fatal("failed to connect to mySql:", error)
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(10)
+	db.SetConnMaxIdleTime(5 * time.Minute)
+
+	if err := db.Ping(); err != nil {
+		return nil, err
 	}
 
-	log.Println("mySql connected sucessfully")
+	return db, nil
 }

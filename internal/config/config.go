@@ -1,8 +1,7 @@
 package config
 
 import (
-	// "log"
-	"log"
+	"errors"
 	"os"
 )
 
@@ -14,18 +13,38 @@ type Config struct {
 	DBPort string `yaml:"DB_PORT" env:"DB_PORT" env-required:"true"`
 }
 
-func LoadConfig() *Config {
+func LoadConfig() (*Config, error) {
 	cfg := &Config{
 		DBHost: os.Getenv("DB_HOST"),
 		DBUser: os.Getenv("DB_USER"),
 		DBPass: os.Getenv("DB_PASSWORD"),
-		DBName: os.Getenv("DB_Name"),
-		DBPort: os.Getenv("DB_Port"),
+		DBName: os.Getenv("DB_NAME"),
+		DBPort: os.Getenv("DB_PORT"),
 	}
 
-	if cfg.DBHost == "" || cfg.DBName == "" || cfg.DBPass == "" || cfg.DBPort == "" || cfg.DBUser == "" {
-		log.Fatal(" missing env variable")
+	// validate required env variables
+	if err := Validation(cfg); err != nil {
+		return nil, err
 	}
+	return cfg, nil
 
-	return cfg
+}
+
+func Validation(cfg *Config) error {
+	if cfg.DBHost == "" {
+		return errors.New("DB_HOST missing")
+	}
+	if cfg.DBName == "" {
+		return errors.New("DB_NAME is missing")
+	}
+	// if cfg.DBPass == "" {
+	// 	return errors.New("DB_PASSWORD is missing")
+	// }
+	if cfg.DBPort == "" {
+		return errors.New("DB_PORT is missing")
+	}
+	if cfg.DBUser == "" {
+		return errors.New("DB_USER is missing")
+	}
+	return nil
 }

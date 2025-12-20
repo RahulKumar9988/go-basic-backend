@@ -18,19 +18,19 @@ func NewAuthService(repo *repository.UserRepo) *AuthService {
 }
 
 // acess login
-func (s *AuthService) Login(email, password string) (string, error) {
+func (s *AuthService) Login(email, password string) (int, error) {
 
 	// fetch user from db
 	user, err := s.Repo.FindByEmail(email)
 
 	// check user exist of not
 	if err != nil {
-		return "", errors.New("User Not Found")
+		return 0, errors.New("User Not Found")
 	}
 
 	// verify password
 	if user.Password != password {
-		return "", errors.New("Invalid Password")
+		return 0, errors.New("Invalid Password")
 	}
 
 	// return login user id

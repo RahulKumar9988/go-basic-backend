@@ -26,7 +26,7 @@ func (r TodoRepo) GetAll() ([]model.Todo, error) {
 
 	for rows.Next() {
 		var todo model.Todo
-		if err := rows.Scan(&todo.Id, &todo.Title, &todo.Status); err != nil {
+		if err := rows.Scan(&todo.Id, &todo.Title); err != nil {
 			return nil, err
 		}
 
@@ -46,7 +46,7 @@ func (r *TodoRepo) Create(todo model.Todo) error {
 	_, err := r.DB.Exec(
 		"ISNERT INTO todos (title, status) VALUES (?, ?)",
 		todo.Title,
-		todo.Status,
+		// todo.Status,
 	)
 	return err
 }
@@ -56,7 +56,7 @@ func (r *TodoRepo) Update(id string, todo model.Todo) error {
 	_, err := r.DB.Exec(
 		"UPDATE todos SET title=?, status=? WHERE id=?",
 		todo.Title,
-		todo.Status,
+		// todo.Status,
 		id,
 	)
 
