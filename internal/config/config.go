@@ -37,9 +37,9 @@ func Validation(cfg *Config) error {
 	if cfg.DBName == "" {
 		return errors.New("DB_NAME is missing")
 	}
-	// if cfg.DBPass == "" {
-	// 	return errors.New("DB_PASSWORD is missing")
-	// }
+	if cfg.DBPass == "" {
+		return errors.New("DB_PASSWORD is missing")
+	}
 	if cfg.DBPort == "" {
 		return errors.New("DB_PORT is missing")
 	}

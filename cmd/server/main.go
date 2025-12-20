@@ -32,8 +32,8 @@ func main() {
 
 	// Conntect DB
 	dbConnection, err := db.ConntectDB(cfg)
-	if dbConnection != nil {
-		log.Fatal("Failed to Connect DB", err)
+	if err != nil {
+		log.Fatal("Failed to Connect DB:", err)
 	}
 	defer dbConnection.Close()
 
