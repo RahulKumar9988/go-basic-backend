@@ -13,6 +13,10 @@ func NewTodoServices(repo *repository.TodoRepo) *TodoServices {
 	return &TodoServices{Repo: repo}
 }
 
+func (s *TodoServices) GetByUser(userID int) error {
+	return s.Repo.GetByUser(userID)
+}
+
 func (s *TodoServices) Create(todo model.Todo) error {
 	return s.Repo.Create(todo)
 }

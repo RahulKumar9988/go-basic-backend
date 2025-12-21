@@ -18,28 +18,28 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 }
 
 // main logic
-func (r *UserRepo) FindByEmail(email string) (*model.User, error) {
-	// query is required to get the user by id.
-	row := r.DB.QueryRow(
-		"SELECT id, email, password FROM users WHERE email=?",
-		email,
+func (r *UserRepo) Create(u model.User) error {
+	_, err := r.DB.Exec(
+		"INSERT INTO users (email, password) VALUES ($1,$2)",
+		u.Email, u.Password,
 	)
+	return err
+}
 
-	// empty struct created to store user
-	var user model.User
+func (r *UserRepo) GetAllUsers() ([]model.User, error) {
+	rows, err := r.DB.Query("SELECT id, email FROM users")
 
-	// scane db and map it with user struct
-	err := row.Scan(
-		&user.ID,
-		&user.UserName,
-		&user.Password,
-	)
-
-	// If no row found OR any DB error occurs
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	// return pointer to user struct if sucessful
-	return &user, nil
+	var users []model.User
+
+	for rows.Next() {
+		var u model.User
+		rows.Scan(&u.ID, &u.Email)
+		users = append(users, u)
+	}
+	return users, nil
 }
