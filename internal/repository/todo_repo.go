@@ -17,7 +17,7 @@ func NewTodoRepo(db *sql.DB) *TodoRepo {
 // select by ID
 func (r TodoRepo) GetByUser(userID int) ([]model.Todo, error) {
 	rows, err := r.DB.Query(
-		"SELECT id, title, user_id FROM todos WHERE user_id=$1",
+		"SELECT id, title, completed ,user_id FROM todos WHERE user_id=$1",
 		userID,
 	)
 
@@ -29,46 +29,20 @@ func (r TodoRepo) GetByUser(userID int) ([]model.Todo, error) {
 	var todos []model.Todo
 	for rows.Next() {
 		var t model.Todo
-		rows.Scan(&t.Id, &t.Title, &t.Status, &t.UserId)
+		rows.Scan(&t.Id, &t.Title, &t.Completed, &t.UserID)
 		todos = append(todos, t)
 	}
 
 	return todos, nil
 }
 
-// selection operations
-func (r TodoRepo) GetAll() ([]model.Todo, error) {
-	rows, err := r.DB.Query("SELECT id,title,status FROM todos")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var Todos []model.Todo
-
-	for rows.Next() {
-		var todo model.Todo
-		if err := rows.Scan(&todo.Id, &todo.Title); err != nil {
-			return nil, err
-		}
-
-		Todos = append(Todos, todo)
-	}
-
-	//error handling for itrations
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return Todos, nil
-}
-
 // create operation
 func (r *TodoRepo) Create(todo model.Todo) error {
 	_, err := r.DB.Exec(
-		"ISNERT INTO todos (title, status) VALUES (?, ?)",
+		"INSERT INTO todos (title, completed, user_id) VALUES ($1, $2, $3)",
 		todo.Title,
-		// todo.Status,
+		todo.Completed,
+		todo.UserID,
 	)
 	return err
 }
